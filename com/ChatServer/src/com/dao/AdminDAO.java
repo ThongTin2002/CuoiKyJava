@@ -11,6 +11,7 @@ import java.util.List;
 import org.mindrot.jbcrypt.BCrypt;
 
 public class AdminDAO {
+
 	//kiểm tra admin tồn tại chưa bằng cách so sánh mật khẩu vs csdl
     public boolean validateAdmin(String adminname, String password) throws SQLException {
         String query = "SELECT password FROM admin WHERE admin_name = ?";

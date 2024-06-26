@@ -69,31 +69,33 @@ public class MainScreen extends JFrame implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (!isSocketOpened) {
-			try {
-				if (serverNameText.getText().isEmpty())
-					JOptionPane.showMessageDialog(this, "Tên server không được trống", "Lỗi",
+		if (e.getSource() == openCloseButton) {
+			if (!isSocketOpened) {
+				try {
+					if (serverNameText.getText().isEmpty())
+						JOptionPane.showMessageDialog(this, "Tên server không được trống", "Lỗi",
+								JOptionPane.WARNING_MESSAGE);
+					else if (portText.getText().isEmpty())
+						JOptionPane.showMessageDialog(this, "Port không được trống", "Lỗi",
+								JOptionPane.WARNING_MESSAGE);
+					else {
+						Main.socketController.serverName = serverNameText.getText();
+						Main.socketController.serverPort = Integer.parseInt(portText.getText());
+						Main.socketController.OpenSocket(Main.socketController.serverPort);
+						isSocketOpened = true;
+						openCloseButton.setText("Đóng server");
+					}
+				} catch (NumberFormatException ex) {
+					JOptionPane.showMessageDialog(this, "Port phải là 1 số nguyên dương", "Lỗi",
 							JOptionPane.WARNING_MESSAGE);
-				else if (portText.getText().isEmpty())
-					JOptionPane.showMessageDialog(this, "Port không được trống", "Lỗi", JOptionPane.WARNING_MESSAGE);
-				else {
-
-					Main.socketController.serverName = serverNameText.getText();
-					Main.socketController.serverPort = Integer.parseInt(portText.getText());
-
-					Main.socketController.OpenSocket(Main.socketController.serverPort);
-					isSocketOpened = true;
-					openCloseButton.setText("Đóng server");
 				}
-
-			} catch (NumberFormatException ex) {
-				JOptionPane.showMessageDialog(this, "Port phải là 1 số nguyên dương", "Lỗi",
-						JOptionPane.WARNING_MESSAGE);
+			} else {
+				Main.socketController.CloseSocket();
+				isSocketOpened = false;
+				openCloseButton.setText("Mở server");
 			}
-		} else {
-			Main.socketController.CloseSocket();
-			isSocketOpened = false;
-			openCloseButton.setText("Mở server");
+		} else if (e.getSource() == listAllUser) {
+			showUserList();
 		}
 	}
 
@@ -107,8 +109,9 @@ public class MainScreen extends JFrame implements ActionListener {
 
 		clientTable.setModel(new DefaultTableModel(tableContent, new String[] { "Tên client", "Port client" }));
 	}
-    private void showUserList() {
-        java.util.List<String[]> users = adminDAO.getAllUsers();
-        new UserListFrame(users, adminDAO);
-    }
+
+	private void showUserList() {
+		java.util.List<String[]> users = adminDAO.getAllUsers();
+		new UserListFrame(users, adminDAO);
+	}
 }
